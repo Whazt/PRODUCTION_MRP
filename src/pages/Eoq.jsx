@@ -68,9 +68,12 @@ function Eoq() {
 
   return (
     <>
+    <div>
+      <h1 className=" uppercase text-center py-1 bg-[#000157] text-white ">EOQ</h1>    
+    </div>
     <BackButton/>
     <div className="max-w-md mx-auto mt-20 p-6 bg-gray-100 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Calculadora EOQ</h2>
+      
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="demand">
           Demanda (D)

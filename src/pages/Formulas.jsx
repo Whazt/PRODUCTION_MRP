@@ -14,9 +14,9 @@ const Formulas =()=> {
                     <img  className=" w-64   h-44  rounded-md" src="/Eoq.png" alt="LOGO" />
                     EOQ
                 </NavLink>
-                <NavLink to={"/Cadena-Suministros"} className={" mt-8 mx-4 border-[#000157] border-[1px] bg-[#002657] text-white shadow-md rounded-md"}>
+                <NavLink to={"/Formulas/Rotacion-Inventario"} className={" mt-8 mx-4 border-[#000157] border-[1px] bg-[#002657] text-white shadow-md rounded-md"}>
                     <img  className="w-64   h-44  rounded-md" src="/cadenasuministro.png" alt="LOGO" />  
-                    Cadena de Suministros
+                    Rotación de Inventario
                 </NavLink>
             </div>
         </div>

@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar"
 import Formulas from "./pages/Formulas"
 import Eoq from "./pages/Eoq"
 import MantCorrectivo from "./pages/MantCorrectivo"
+import RotacionInventario from "./pages/RotacionInventario"
 import { BrowserRouter as Router, Routes, Route, RouterProvider } from 'react-router-dom'
 
 
@@ -20,6 +21,7 @@ function App() {
               <Route path='/Formulas' exact={true} element={<Formulas/>}/>
               <Route path='/Formulas/Eoq' exact={true} element={<Eoq/>}/>
               <Route path='/Formulas/Mantenimiento-Correctivo' exact={true} element={<MantCorrectivo/>}/>
+              <Route path='/Formulas/Rotacion-Inventario' exact={true} element={<RotacionInventario/>}/>
               
             </Routes>
           </div>

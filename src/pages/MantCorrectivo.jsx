@@ -137,6 +137,9 @@ function MantCorrectivo (){
 
     return (
         <>
+         <div>
+            <h1 className=" uppercase text-center py-1 bg-[#000157] text-white ">Costo de Mantenimiento Correctivo</h1>    
+        </div>
             <BackButton/>
          <div className="bg-gray-100 p-6 mt-15 flex items-center justify-center max-w-full ">
             <div className="min-w-[800px]   bg-white p-8 rounded-lg shadow-md">
