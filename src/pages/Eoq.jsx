@@ -63,6 +63,7 @@ function Eoq() {
       orderingCost: '',
       holdingCost: '',
     });
+    
   };
 
   return (
@@ -125,7 +126,7 @@ function Eoq() {
       </div>
       {eoq !== null && (
         <div className="mt-4">
-          <p className="text-gray-700">
+          <p className="text-gray-900 bg-green-300 p-3 rounded-md w-full">
             La Cantidad Económica de Pedido (EOQ) es: <strong>{eoq.toFixed(2)}</strong>
           </p>
         </div>
