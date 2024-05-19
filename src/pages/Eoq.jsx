@@ -14,13 +14,13 @@ function Eoq() {
   });
   
   const handleKeyDown = (event) => {
-    if (event.key === 'e' || event.key === '-') {
+    if (event.key === 'e' || event.key === '-' || event.key === '+') {
       event.preventDefault();
     }
   };
 
   const handleKeyDownDemand = (event) => {
-    if (event.key === 'e' || event.key === '-' || event.key === '.') {
+    if (event.key === 'e' || event.key === '-' || event.key === '.' || event.key === '+') {
       event.preventDefault();
     }
   };
@@ -66,14 +66,16 @@ function Eoq() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-gray-100 rounded-lg shadow-md">
+    <>
+    <BackButton/>
+    <div className="max-w-md mx-auto mt-20 p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Calculadora EOQ</h2>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="demand">
           Demanda (D)
         </label>
         <input
-          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.demand && 'border-red-500'}`}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-300 ${errors.demand && 'border-red-500'}`}
           id="demand"
           type="number"
           placeholder="Ingrese la demanda"
@@ -88,7 +90,7 @@ function Eoq() {
           Costo de ordenar por pedido (S)
         </label>
         <input
-          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.orderingCost && 'border-red-500'}`}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-300 ${errors.orderingCost && 'border-red-500'}`}
           id="orderingCost"
           type="number"
           placeholder="Ingrese el costo de ordenar"
@@ -103,7 +105,7 @@ function Eoq() {
           Costo de mantener por unidad (H)
         </label>
         <input
-          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.holdingCost && 'border-red-500'}`}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-300 ${errors.holdingCost && 'border-red-500'}`}
           id="holdingCost"
           type="number"
           placeholder="Ingrese el costo de mantener"
@@ -115,10 +117,10 @@ function Eoq() {
       </div>
       <div className="mb-4">
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-300"
           onClick={calculateEOQ}
         >
-          Calcular EOQ
+          Calcular
         </button>
       </div>
       {eoq !== null && (
@@ -129,6 +131,8 @@ function Eoq() {
         </div>
       )}
     </div>
+    </>
+    
   );
 }
 

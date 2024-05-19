@@ -2,7 +2,9 @@ import Sidebar from "./components/Sidebar"
 import Navbar from "./components/Navbar"
 import Formulas from "./pages/Formulas"
 import Eoq from "./pages/Eoq"
+import MantCorrectivo from "./pages/MantCorrectivo"
 import { BrowserRouter as Router, Routes, Route, RouterProvider } from 'react-router-dom'
+
 
 function App() {
 
@@ -17,6 +19,7 @@ function App() {
              
               <Route path='/Formulas' exact={true} element={<Formulas/>}/>
               <Route path='/Formulas/Eoq' exact={true} element={<Eoq/>}/>
+              <Route path='/Formulas/Mantenimiento-Correctivo' exact={true} element={<MantCorrectivo/>}/>
               
             </Routes>
           </div>

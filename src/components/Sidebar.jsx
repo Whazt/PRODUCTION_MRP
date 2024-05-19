@@ -14,7 +14,7 @@ const Sidebar = () =>{
             <nav>
                 <ul className="mt-4">
                     <li>
-                        <NavLink to='/Formulas' title="INICIO" className="flex items-center text-[#000157] gap-3  hover:bg-blue-950 rounded-lg hover:text-white py-3 md:justify-center lg:justify-start  lg:px-8 transition-colors text-lg  ">
+                        <NavLink to='/' title="INICIO" className="flex items-center text-[#000157] gap-3  hover:bg-blue-950 rounded-lg hover:text-white py-3 md:justify-center lg:justify-start  lg:px-8 transition-colors text-lg  ">
                             <span className="w-min-6 h-min-6">
                                 <HomeIcon className="w-6 h-6 "/>
                             </span>
@@ -22,7 +22,7 @@ const Sidebar = () =>{
                         </NavLink>
                     </li>
                     <li>
-                       <NavLink href="/Formulas" title="FORMULAS" className=" flex items-center text-[#000157] gap-3  hover:bg-blue-950 rounded-lg hover:text-white py-3 md:justify-center  lg:justify-start lg:px-8 transition-colors text-lg" >
+                       <NavLink to="/Formulas" title="FORMULAS" className=" flex items-center text-[#000157] gap-3  hover:bg-blue-950 rounded-lg hover:text-white py-3 md:justify-center  lg:justify-start lg:px-8 transition-colors text-lg" >
                         <span className="w-min-6 h-min-6">
                             <CalculatorIcon className="w-6 h-6 "/>
                         </span>
