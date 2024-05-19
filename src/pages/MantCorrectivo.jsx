@@ -50,9 +50,9 @@ function MantCorrectivo (){
         const newErrors = {};
         
         if (H <= 0 || isNaN(H)) {
-            newErrors.demand = 'Ingrese un valor válido para las Horas.';
+            newErrors.horas = 'Ingrese un valor válido para las Horas.';
         } else {
-            newErrors.demand = '';
+            newErrors.horas = '';
         }
 
         if (MTBF_ <= 0 || isNaN(MTBF_)) {
@@ -113,7 +113,7 @@ function MantCorrectivo (){
         const MantCorrectivo = NoFallas * (((DURA*CosTra)+CosRep+CosOpe+Retra)+((DURA*CosPar)+FalUni));
         setMantCorrectivo(MantCorrectivo);
         setErrors({
-            demand: '',
+            horas: '',
             mtbf: '',
             duracion: '',
             ctrabajo: '',
