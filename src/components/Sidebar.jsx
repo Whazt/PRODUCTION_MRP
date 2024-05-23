@@ -7,7 +7,7 @@ import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline"
 const Sidebar = () =>{
     return(
 
-        <div className="hidden md:block md:w-[5%] lg:block lg:w-[15%] md:px-0 justify-center sidebar min-h-screen overflow-y-auto lg:px-6  border-r-[#000157] border-r-[1px] ">
+        <div className="hidden lg:overflow-y-auto md:block md:w-[5%] lg:block lg:w-[15%] md:px-0 justify-center sidebar min-h-screen overflow-y-auto lg:px-6  border-r-[#000157] border-r-[1px] ">
             <div className="flex justify-center items-center pt-2 my-2 ">
                 <img  className=" w-52 h-436" src="/Production.png" alt="LOGO" />
             </div>

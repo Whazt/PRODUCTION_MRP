@@ -28,7 +28,7 @@ function App() {
               <Route path='/Formulas/Rotacion-Inventario' exact={true} element={<RotacionInventario/>}/>
               <Route path='/Formulas/Luc' exact={true} element={<Luc/>}/>
               <Route path='/Formulas/Ltc' exact={true} element={<Ltc/>}/>
-              <Route path='/Formulas/Cantidad-Reipientes' exact={true} element={<CantRecipientes/>}/>
+              <Route path='/Formulas/Cantidad-Recipientes' exact={true} element={<CantRecipientes/>}/>
               <Route path='/Formulas/Cantidad-Kanbanes' exact={true} element={<CantKanbanes/>}/>
             </Routes>
           </div>
