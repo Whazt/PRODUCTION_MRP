@@ -4,6 +4,10 @@ import Formulas from "./pages/Formulas"
 import Eoq from "./pages/Eoq"
 import MantCorrectivo from "./pages/MantCorrectivo"
 import RotacionInventario from "./pages/RotacionInventario"
+import Luc from "./pages/Luc"
+import Ltc from "./pages/Ltc"
+import CantRecipientes from "./pages/CantRecipientes"
+import CantKanbanes from "./pages/CantKanbanes"
 import { BrowserRouter as Router, Routes, Route, RouterProvider } from 'react-router-dom'
 
 
@@ -22,7 +26,10 @@ function App() {
               <Route path='/Formulas/Eoq' exact={true} element={<Eoq/>}/>
               <Route path='/Formulas/Mantenimiento-Correctivo' exact={true} element={<MantCorrectivo/>}/>
               <Route path='/Formulas/Rotacion-Inventario' exact={true} element={<RotacionInventario/>}/>
-              
+              <Route path='/Formulas/Luc' exact={true} element={<Luc/>}/>
+              <Route path='/Formulas/Ltc' exact={true} element={<Ltc/>}/>
+              <Route path='/Formulas/Cantidad-Reipientes' exact={true} element={<CantRecipientes/>}/>
+              <Route path='/Formulas/Cantidad-Kanbanes' exact={true} element={<CantKanbanes/>}/>
             </Routes>
           </div>
         </div>
