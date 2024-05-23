@@ -2,7 +2,7 @@ import BackButton from "../components/BackButton"
 import { useState } from "react";
 
 function CantKanbanes() {
-    const [rows, setRows] = useState(0);
+    const [rows, setRows] = useState(null);
     const [formData, setFormData] = useState([]);
     
     const handleKeyDown = (event) => {
