@@ -21,11 +21,6 @@ function RotacionInventario() {
         security: '',
     }); 
 
-    const handleKeyDown = (event) => {
-        if (event.key === 'e' || event.key === '-' || event.key === '+') {
-          event.preventDefault();
-        }
-    };
     
       const handleKeyDownInt = (event) => {
         if (event.key === 'e' || event.key === '-' || event.key === '.' || event.key === '+') {
