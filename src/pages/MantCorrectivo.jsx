@@ -81,7 +81,7 @@ function MantCorrectivo (){
             newErrors.coperacional = '';
         }
 
-        if (Retra <= 0 || isNaN(Retra)) {
+        if (Retra < 0 || isNaN(Retra)) {
             newErrors.retraso = 'Ingrese un valor válido para el Retraso Logístico.';
         } else {
             newErrors.retraso = '';
