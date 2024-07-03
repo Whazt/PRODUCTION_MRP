@@ -122,7 +122,41 @@ const MRPPage = () => {
     }
   };
 
+  const handleDeleteDiagram = async (diagramId) => {
+    try {
+      await fetch(`https://mrpback-production.up.railway.app/api/diagrams/${diagramId}`, {
+        method: 'DELETE',
+      });
+      fetchDiagrams(); // Refresh the list of saved diagrams
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await fetch(`https://mrpback-production.up.railway.app/api/products/${productId}`, {
+        method: 'DELETE',
+      });
+      fetchProducts(); // Refresh the list of products
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleDeleteComponent = async (componentId) => {
+    try {
+      await fetch(`https://mrpback-production.up.railway.app/api/components/${componentId}`, {
+        method: 'DELETE',
+      });
+      fetchComponents(); // Refresh the list of components
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   const handleSelectDiagram = async (diagramId) => {
+    setSelectedDiagram(diagramId);
     const response = await fetch(`https://mrpback-production.up.railway.app/api/diagrams/${diagramId}`);
     const data = await response.json();
     setDiagramData(data);
@@ -130,148 +164,175 @@ const MRPPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">MRP Diagrams</h1>
+    <>
+    <h1 className="uppercase text-center py-3 bg-[#000157] text-white text-xl">Diagrama Arboral</h1>
 
-      <div className="mb-4">
-        <label className="block mb-2">Diagram Name</label>
-        <input
-          type="text"
-          value={diagramName}
-          onChange={(e) => setDiagramName(e.target.value)}
-          className="p-2 border rounded"
-          placeholder="Enter diagram name"
-        />
-      </div>
+<div className="container mx-auto p-4">
+ 
+  <div className="mb-4">
+    <label className="block mb-2">Nombre del Diagrama</label>
+    <input
+      type="text"
+      value={diagramName}
+      onChange={(e) => setDiagramName(e.target.value)}
+      className="p-2 border rounded"
+      placeholder="Enter diagram name"
+    />
+  </div>
 
-      <div className="mb-4">
-        <label className="block mb-2">Select Product</label>
-        <select
-          value={selectedProduct}
-          onChange={(e) => setSelectedProduct(e.target.value)}
-          className="p-2 border rounded"
-        >
-          <option value="">Select a product</option>
-          {products.map((product) => (
-            <option key={product._id} value={product._id}>
-              {product.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label className="block mb-2">Select Component</label>
-        <select
-          value={selectedComponent}
-          onChange={(e) => setSelectedComponent(e.target.value)}
-          className="p-2 border rounded"
-        >
-          <option value="">Select a component</option>
-          {components.map((component) => (
-            <option key={component._id} value={component._id}>
-              {component.name}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          value={componentQuantity}
-          onChange={(e) => setComponentQuantity(parseInt(e.target.value, 10))}
-          className="p-2 border rounded ml-2"
-          placeholder="Quantity"
-        />
-        <button
-          onClick={handleAddComponent}
-          className="p-2 bg-blue-500 text-white rounded ml-2"
-        >
-          Add Component to Product
-        </button>
-      </div>
-
-      {temporaryComponents.length > 0 && (
-        <div className="mb-4">
-          <h2 className="text-lg font-bold mb-2">Temporary Components</h2>
-          <ul className="list-disc pl-5">
-            {temporaryComponents.map((component, index) => (
-              <li key={index}>
-                {components.find((comp) => comp._id === component.componentId)?.name} - Quantity: {component.quantity}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="mb-4">
-        <label className="block mb-2">Demand</label>
-        <input
-          type="number"
-          value={demand}
-          onChange={(e) => setDemand(parseInt(e.target.value, 10))}
-          className="p-2 border rounded"
-        />
-      </div>
-
-      <button onClick={handleSaveDiagram} className="p-2 bg-green-500 text-white rounded">
-        Save Diagram
+  <div className="mb-4">
+    <label className="block mb-2">Seleccion de Producto</label>
+    <select
+      value={selectedProduct}
+      onChange={(e) => setSelectedProduct(e.target.value)}
+      className="p-2 border rounded"
+    >
+      <option value="">Selecciona un producto</option>  
+      {products.map((product) => (
+        <option key={product._id} value={product._id}>
+          {product.name}
+        </option>
+      ))}
+    </select>
+    {selectedProduct && (
+      <button
+        onClick={() => handleDeleteProduct(selectedProduct)}
+        className="ml-2 p-2 bg-red-500 text-white rounded"
+      >
+        Eliminar Producto
       </button>
+    )}
+  </div>
 
-      <h2 className="text-xl font-bold mt-4">Add New Product or Component</h2>
+  <div className="mb-4">
+    <label className="block mb-2">Seleccion de Componente</label>
+    <select
+      value={selectedComponent}
+      onChange={(e) => setSelectedComponent(e.target.value)}
+      className="p-2 border rounded"
+    >
+      <option value="">Selecciona un componente</option>
+      {components.map((component) => (
+        <option key={component._id} value={component._id}>
+          {component.name}
+        </option>
+      ))}
+    </select>
+    <input
+      type="number"
+      value={componentQuantity}
+      onChange={(e) => setComponentQuantity(parseInt(e.target.value, 10))}
+      className="p-2 border rounded ml-2"
+      placeholder="Cantidad"
+    />
+    <button
+      onClick={handleAddComponent}
+      className="p-2 bg-blue-500 text-white rounded ml-2"
+    >
+      Agregar Componente
+    </button>
+    {selectedComponent && (
+      <button
+        onClick={() => handleDeleteComponent(selectedComponent)}
+        className="ml-2 p-2 bg-red-500 text-white rounded"
+      >
+        Eliminar Componente
+      </button>
+    )}
+  </div>
 
-      <div className="mb-4">
-        <label className="block mb-2">New Product</label>
-        <input
-          type="text"
-          value={newProduct}
-          onChange={(e) => setNewProduct(e.target.value)}
-          className="p-2 border rounded"
-          placeholder="New product name"
-        />
-        <button onClick={handleAddProduct} className="p-2 bg-blue-500 text-white rounded ml-2">
-          Add Product
-        </button>
-      </div>
+  {temporaryComponents.length > 0 && (
+    <div className="mb-4">
+      <h2 className="text-lg font-bold mb-2">Temporary Components</h2>
+      <ul className="list-disc pl-5">
+        {temporaryComponents.map((component, index) => (
+          <li key={index}>
+            {components.find((comp) => comp._id === component.componentId)?.name} - Quantity: {component.quantity}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
 
-      <div className="mb-4">
-        <label className="block mb-2">New Component</label>
-        <input
-          type="text"
-          value={newComponent}
-          onChange={(e) => setNewComponent(e.target.value)}
-          className="p-2 border rounded"
-          placeholder="New component name"
-        />
-        <button onClick={handleAddCompo} className="p-2 bg-blue-500 text-white rounded ml-2">
-          Add Component
-        </button>
-      </div>
+  <div className="mb-4">
+    <label className="block mb-2">Demanda</label>
+    <input
+      type="number"
+      value={demand}
+      onChange={(e) => setDemand(parseInt(e.target.value, 10))}
+      className="p-2 border rounded"
+    />
+  </div>
 
-      <h2 className="text-xl font-bold mt-4">View Saved Diagrams</h2>
-      
-      <div className="mb-4">
-        <label className="block mb-2">Select Diagram</label>
-        <select
-          value={selectedDiagram}
-          onChange={(e) => handleSelectDiagram(e.target.value)}
-          className="p-2 border rounded"
-        >
-          <option value="">Select a diagram</option>
-          {diagrams.map((diagram) => (
-            <option key={diagram._id} value={diagram._id}>
-              {diagram.name} - {diagram.productId.name}
-            </option>
-          ))}
-        </select>
-      </div>
+  <button onClick={handleSaveDiagram} className="p-2 bg-green-500 text-white rounded">
+    Guardar Diagrama
+  </button>
 
-      {diagramData && (
-        <MRPDiagram
-          diagramData={diagramData}
-          temporaryComponents={temporaryComponents}
-          demand={demand} // Pass the demand to the diagram component
-        />
-      )}
-     </div>
+  <h2 className="text-xl font-bold mt-4">Agregar</h2>
+
+  <div className="mb-4">
+    <label className="block mb-2">Nuevo Producto</label>
+    <input
+      type="text"
+      value={newProduct}
+      onChange={(e) => setNewProduct(e.target.value)}
+      className="p-2 border rounded"
+      placeholder="Nuevo nombre del producto"
+    />
+    <button onClick={handleAddProduct} className="p-2 bg-blue-500 text-white rounded ml-2">
+      Agregar Producto
+    </button>
+  </div>
+
+  <div className="mb-4">
+    <label className="block mb-2">Nuevo Componente</label>
+    <input
+      type="text"
+      value={newComponent}
+      onChange={(e) => setNewComponent(e.target.value)}
+      className="p-2 border rounded"
+      placeholder="Nuevo nombre del componente"
+    />
+    <button onClick={handleAddCompo} className="p-2 bg-blue-500 text-white rounded ml-2">
+      Agregar Componente
+    </button>
+  </div>
+
+  <h2 className="text-xl font-bold mt-4">Diagramas Guardados</h2>
+  
+  <div className="flex items-center mb-4">
+    <label className="block mb-2 mr-2">Diagramas</label>
+    <select
+      value={selectedDiagram}
+      onChange={(e) => handleSelectDiagram(e.target.value)}
+      className="p-2 border rounded"
+    >
+      <option value="">Selecciona un diagrama</option>
+      {diagrams.map((diagram) => (
+        <option key={diagram._id} value={diagram._id}>
+          {diagram.name} - {diagram.productId.name}
+        </option>
+      ))}
+    </select>
+    {selectedDiagram && (
+      <button
+        onClick={() => handleDeleteDiagram(selectedDiagram)}
+        className="ml-2 p-2 bg-red-500 text-white rounded"
+      >
+        Eliminar Diagrama
+      </button>
+    )}
+  </div>
+
+  {diagramData && (
+    <MRPDiagram
+      diagramData={diagramData}
+      temporaryComponents={temporaryComponents}
+      demand={demand} // Pass the demand to the diagram component
+    />
+  )}
+</div>
+    </>
   );
 };
 
