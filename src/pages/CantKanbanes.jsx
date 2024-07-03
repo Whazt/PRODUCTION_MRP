@@ -1,4 +1,4 @@
-import BackButton from "../components/BackButton"
+import BackButton from "../components/BackButton";
 import { useState } from "react";
 
 function CantKanbanes() {
@@ -6,6 +6,7 @@ function CantKanbanes() {
     const [formData, setFormData] = useState([]);
     const [resultMessage, setResultMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [showTable, setShowTable] = useState(false);
 
     const handleKeyDown = (event) => {
         if (event.key === 'e' || event.key === '-' || event.key === '+') {
@@ -22,7 +23,14 @@ function CantKanbanes() {
     const handleRowsChange = (e) => {
         const numRows = parseInt(e.target.value, 10);
         setRows(numRows);
-        setFormData(Array.from({ length: numRows }, () => ({
+    };
+
+    const generateTable = () => {
+        if (rows < 1) {
+            setErrorMessage("El número de filas debe ser al menos 1.");
+            return;
+        }
+        setFormData(Array.from({ length: rows }, () => ({
             producto: "",
             demanda: "",
             tiempoDeEntrega: "",
@@ -30,6 +38,7 @@ function CantKanbanes() {
             capacidadDeAlmacenaje: "",
             cantidadKanbanes: ""
         })));
+        setShowTable(true);
         setResultMessage(""); // Limpiar el mensaje de resultado al cambiar el número de filas
         setErrorMessage(""); // Limpiar el mensaje de error al cambiar el número de filas
     };
@@ -46,39 +55,39 @@ function CantKanbanes() {
     };
 
     const calculateKanbanes = () => {
-        // Verificar si hay campos vacíos
+        // Verificar si hay campos vacíos o valores inválidos
         for (let row of formData) {
-            if (!row.producto || !row.demanda || !row.tiempoDeEntrega || !row.stockDeSeguridad || !row.capacidadDeAlmacenaje) {
-                setErrorMessage("Todos los campos deben estar llenos.");
+            if (!row.producto || row.demanda <= 0 || row.tiempoDeEntrega <= 0 || row.stockDeSeguridad <= 0 || row.stockDeSeguridad > 100 || row.capacidadDeAlmacenaje <= 0) {
+                setErrorMessage("Todos los campos deben estar llenos y cumplir con las restricciones.");
                 setResultMessage(""); // Limpiar el mensaje de resultado si hay un error
                 setFormData(formData.map(row => ({ ...row, cantidadKanbanes: "" }))); // Limpiar los campos de cantidadKanbanes
                 return;
             }
         }
-        setErrorMessage(""); // Limpiar el mensaje de error si no hay campos vacíos
+        setErrorMessage(""); // Limpiar el mensaje de error si no hay campos vacíos o valores inválidos
 
         const updatedFormData = formData.map(row => {
             const demanda = parseFloat(row.demanda) || 0;
             const tiempoDeEntrega = parseFloat(row.tiempoDeEntrega) || 0;
             const stockDeSeguridad = parseFloat(row.stockDeSeguridad) || 0;
             const capacidadDeAlmacenaje = parseFloat(row.capacidadDeAlmacenaje) || 1; // Avoid division by zero
-            const cantidadKanbanes = (demanda * tiempoDeEntrega * (1 + stockDeSeguridad)) / capacidadDeAlmacenaje;
+            const cantidadKanbanes = (demanda * tiempoDeEntrega * (1 + (stockDeSeguridad / 100))) / capacidadDeAlmacenaje;
             const cantidadKanbanesRounded = Math.round(cantidadKanbanes * 100) / 100; // Round to 2 decimal places
 
-            const cantidadKanbanesDisplay = cantidadKanbanesRounded % 1 === 0 ? 
-                cantidadKanbanesRounded.toFixed(0) : 
+            const cantidadKanbanesDisplay = cantidadKanbanesRounded % 1 === 0 ?
+                cantidadKanbanesRounded.toFixed(0) :
                 cantidadKanbanesRounded.toFixed(2);
-            
-            const cantidadKanbanesFinal = cantidadKanbanes - Math.floor(cantidadKanbanes) >= 0.5 ? 
-                Math.ceil(cantidadKanbanes) : 
+
+            const cantidadKanbanesFinal = cantidadKanbanes - Math.floor(cantidadKanbanes) >= 0.5 ?
+                Math.ceil(cantidadKanbanes) :
                 Math.floor(cantidadKanbanes);
 
-            const displayText = cantidadKanbanesFinal !== cantidadKanbanesRounded ? 
-                `${cantidadKanbanesDisplay} ≈ ${cantidadKanbanesFinal}` : 
+            const displayText = cantidadKanbanesFinal !== cantidadKanbanesRounded ?
+                `${cantidadKanbanesDisplay} ≈ ${cantidadKanbanesFinal}` :
                 `${cantidadKanbanesFinal}`;
 
-            return { 
-                ...row, 
+            return {
+                ...row,
                 cantidadKanbanes: displayText
             };
         });
@@ -90,9 +99,9 @@ function CantKanbanes() {
     };
 
     return (
-        <div>     
+        <div>
             <div>
-                <h1 className="uppercase text-center py-1 bg-[#000157] text-white">Cantidad de Kanbanes</h1>    
+                <h1 className="uppercase text-center py-1 bg-[#000157] text-white">Cantidad de Kanbanes</h1>
             </div>
             <BackButton />
             <div className="p-4">
@@ -106,79 +115,89 @@ function CantKanbanes() {
                     min="0"
                     onKeyDown={handleKeyDownInt}
                 />
-                <div className="overflow-auto mt-4">
-                    <table className="min-w-full border-collapse border border-gray-200">
-                        <thead>
-                            <tr>
-                                <th className="border border-gray-300 p-2">Producto</th>
-                                <th className="border border-gray-300 p-2">Demanda</th>
-                                <th className="border border-gray-300 p-2">Tiempo de Entrega</th>
-                                <th className="border border-gray-300 p-2">Stock de Seguridad</th>
-                                <th className="border border-gray-300 p-2">Capacidad de Almacenaje</th>
-                                <th className="border border-gray-300 p-2">Cantidad de Kanbanes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {formData.map((row, index) => (
-                                <tr key={index}>
-                                    <td className="border border-gray-300 p-2">
-                                        <input
-                                            type="text"
-                                            className="w-full rounded px-2 py-1 bg-transparent border-0"
-                                            value={row.producto}
-                                            onChange={(e) => handleInputChange(e, index, "producto")}
-                                        />
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                        <input
-                                            type="number"
-                                            className="w-full rounded px-2 py-1 no-spinner bg-transparent border-0"
-                                            value={row.demanda}
-                                            onChange={(e) => handleInputChange(e, index, "demanda")}
-                                            onKeyDown={handleKeyDownInt}
-                                        />
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                        <input
-                                            type="number"
-                                            className="w-full rounded px-2 py-1 no-spinner bg-transparent border-0"
-                                            value={row.tiempoDeEntrega}
-                                            onChange={(e) => handleInputChange(e, index, "tiempoDeEntrega")}
-                                            onKeyDown={handleKeyDownInt}
-                                        />
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                        <input
-                                            type="number"
-                                            className="w-full rounded px-2 py-1 no-spinner bg-transparent border-0"
-                                            value={row.stockDeSeguridad}
-                                            onChange={(e) => handleInputChange(e, index, "stockDeSeguridad")}
-                                            onKeyDown={handleKeyDown}
-                                        />
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                        <input
-                                            type="number"
-                                            className="w-full rounded px-2 py-1 no-spinner bg-transparent border-0"
-                                            value={row.capacidadDeAlmacenaje}
-                                            onChange={(e) => handleInputChange(e, index, "capacidadDeAlmacenaje")}
-                                            onKeyDown={handleKeyDownInt}
-                                        />
-                                    </td>
-                                    <td className="border border-gray-300 p-2">
-                                        {row.cantidadKanbanes}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
                 <button
-                    onClick={calculateKanbanes}
-                    className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
+                    onClick={generateTable}
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
                 >
-                    Calcular Cantidad de Kanbanes
+                    Generar Tabla
                 </button>
+                {showTable && (
+                    <div className="overflow-auto mt-4">
+                        <table className="min-w-full border-collapse border border-gray-200">
+                            <thead>
+                                <tr>
+                                    <th className="border border-gray-300 p-2">Producto</th>
+                                    <th className="border border-gray-300 p-2">Demanda</th>
+                                    <th className="border border-gray-300 p-2">Tiempo de Entrega</th>
+                                    <th className="border border-gray-300 p-2">Stock de Seguridad</th>
+                                    <th className="border border-gray-300 p-2">Capacidad de Almacenaje</th>
+                                    <th className="border border-gray-300 p-2">Cantidad de Kanbanes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {formData.map((row, index) => (
+                                    <tr key={index}>
+                                        <td className="border border-gray-300 p-2">
+                                            <input
+                                                type="text"
+                                                className="w-full rounded px-2 py-1 bg-transparent border-0"
+                                                value={row.producto}
+                                                onChange={(e) => handleInputChange(e, index, "producto")}
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 p-2">
+                                            <input
+                                                type="number"
+                                                className="w-full rounded px-2 py-1 no-spinner bg-transparent border-0"
+                                                value={row.demanda}
+                                                onChange={(e) => handleInputChange(e, index, "demanda")}
+                                                onKeyDown={handleKeyDownInt}
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 p-2">
+                                            <input
+                                                type="number"
+                                                className="w-full rounded px-2 py-1 no-spinner bg-transparent border-0"
+                                                value={row.tiempoDeEntrega}
+                                                onChange={(e) => handleInputChange(e, index, "tiempoDeEntrega")}
+                                                onKeyDown={handleKeyDownInt}
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 p-2">
+                                            <input
+                                                type="number"
+                                                className="w-full rounded px-2 py-1 no-spinner bg-transparent border-0"
+                                                value={row.stockDeSeguridad}
+                                                onChange={(e) => handleInputChange(e, index, "stockDeSeguridad")}
+                                                onKeyDown={handleKeyDown}
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 p-2">
+                                            <input
+                                                type="number"
+                                                className="w-full rounded px-2 py-1 no-spinner bg-transparent border-0"
+                                                value={row.capacidadDeAlmacenaje}
+                                                onChange={(e) => handleInputChange(e, index, "capacidadDeAlmacenaje")}
+                                                onKeyDown={handleKeyDownInt}
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 p-2">
+                                            {row.cantidadKanbanes}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+                {showTable && (
+                    <button
+                        onClick={calculateKanbanes}
+                        className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
+                    >
+                        Calcular Cantidad de Kanbanes
+                    </button>
+                )}
                 {errorMessage && (
                     <div className="mt-4 p-4 bg-red-200 text-red-800 rounded">
                         {errorMessage}

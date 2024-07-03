@@ -22,6 +22,8 @@ const Ltc = () => {
     const value = event.target.value;
     if (/^\d*\.?\d*$/.test(value)) {
       setConstantS(Number(value));
+    } else {
+      setConstantS(null);
     }
   };
 
@@ -29,6 +31,8 @@ const Ltc = () => {
     const value = event.target.value;
     if (/^\d*\.?\d*$/.test(value)) {
       setConstantK(Number(value));
+    } else {
+      setConstantK(null);
     }
   };
 
@@ -38,9 +42,20 @@ const Ltc = () => {
     }
   };
 
+  const handleKeyDownDecimal = (event) => {
+    if (['-', 'e', 'E', '+'].includes(event.key)) {
+      event.preventDefault();
+    }
+  };
+
   const generateFirstTable = () => {
+    if (weeks < 2) {
+      setError('Por favor, ingrese un número de semanas mayor o igual a 2.');
+      return;
+    }
     const initialData = Array.from({ length: weeks }, () => ({ reqBruto: '' }));
     setReqBrutoData(initialData);
+    setError('');
   };
 
   const handleReqBrutoChange = (index, event) => {
@@ -52,15 +67,9 @@ const Ltc = () => {
     }
   };
 
-  const handleKeyDownDecimal = (event) => {
-    if (['-', 'e', 'E', '+'].includes(event.key)) {
-      event.preventDefault();
-    }
-  };
-
   const calculateSecondTable = () => {
-    if (constantS === null || constantK === null || reqBrutoData.some(data => data.reqBruto === '')) {
-      setError('Por favor, complete todos los campos antes de continuar.');
+    if (constantS === null || constantK === null || constantS === 0 || constantK === 0 || reqBrutoData.some(data => data.reqBruto === '')) {
+      setError('Por favor, complete todos los campos y asegúrese de que ni K ni S sean 0 antes de continuar.');
       return;
     }
 

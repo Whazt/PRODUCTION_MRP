@@ -1,5 +1,5 @@
 // src/pages/MRPPage.js
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import MRPDiagram from '../components/MRPdiagram';
 
 const MRPPage = () => {
@@ -8,6 +8,7 @@ const MRPPage = () => {
   const [selectedProduct, setSelectedProduct] = useState('');
   const [selectedComponent, setSelectedComponent] = useState('');
   const [componentQuantity, setComponentQuantity] = useState(0);
+  const [temporaryComponents, setTemporaryComponents] = useState([]);
   const [diagrams, setDiagrams] = useState([]);
   const [selectedDiagram, setSelectedDiagram] = useState('');
   const [demand, setDemand] = useState(0);
@@ -49,14 +50,14 @@ const MRPPage = () => {
     setNewProduct('');
   };
 
-  const handleAddComponent = async () => {
-    await fetch('http://localhost:3001/api/components', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newComponent }),
-    });
-    fetchComponents();
-    setNewComponent('');
+  const handleAddComponent = () => {
+    const component = {
+      componentId: selectedComponent,
+      quantity: componentQuantity,
+    };
+    setTemporaryComponents([...temporaryComponents, component]);
+    setSelectedComponent('');
+    setComponentQuantity(0);
   };
 
   const handleSaveDiagram = async () => {
@@ -65,11 +66,13 @@ const MRPPage = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         productId: selectedProduct,
-        components: [{ componentId: selectedComponent, quantity: componentQuantity }],
+        components: temporaryComponents,
         demand,
       }),
     });
-    fetchDiagrams();
+    fetchDiagrams(); // Para actualizar la lista de diagramas guardados
+    setTemporaryComponents([]);
+    setDemand(0);
   };
 
   const handleSelectDiagram = async (diagramId) => {
@@ -120,28 +123,25 @@ const MRPPage = () => {
           placeholder="Quantity"
         />
         <button
-          onClick={handleSaveDiagram}
+          onClick={handleAddComponent}
           className="p-2 bg-blue-500 text-white rounded ml-2"
         >
           Add Component to Product
         </button>
       </div>
 
-      <div className="mb-4">
-        <label className="block mb-2">Select Diagram</label>
-        <select
-          value={selectedDiagram}
-          onChange={(e) => handleSelectDiagram(e.target.value)}
-          className="p-2 border rounded"
-        >
-          <option value="">Select a diagram</option>
-          {diagrams.map((diagram) => (
-            <option key={diagram._id} value={diagram._id}>
-              {diagram.productId.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      {temporaryComponents.length > 0 && (
+        <div className="mb-4">
+          <h2 className="text-lg font-bold mb-2">Temporary Components</h2>
+          <ul className="list-disc pl-5">
+            {temporaryComponents.map((component, index) => (
+              <li key={index}>
+                {components.find((comp) => comp._id === component.componentId)?.name} - Quantity: {component.quantity}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="mb-4">
         <label className="block mb-2">Demand</label>
@@ -187,7 +187,29 @@ const MRPPage = () => {
         </button>
       </div>
 
-      {diagramData && <MRPDiagram diagramData={diagramData} />}
+      <h2 className="text-xl font-bold mt-4">View Saved Diagrams</h2>
+      
+      <div className="mb-4">
+        <label className="block mb-2">Select Diagram</label>
+        <select
+          value={selectedDiagram}
+          onChange={(e) => handleSelectDiagram(e.target.value)}
+          className="p-2 border rounded"
+        >
+          <option value="">Select a diagram</option>
+          {diagrams.map((diagram) => (
+            <option key={diagram._id} value={diagram._id}>
+              {diagram.productId.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {diagramData && (
+        <MRPDiagram
+          diagramData={diagramData}
+        />
+      )}
     </div>
   );
 };

@@ -1,31 +1,42 @@
 // src/components/MRPDiagram.js
-import  { useState, useEffect } from 'react';
-import ReactFlow, { ReactFlowProvider, addEdge, MiniMap, Controls, Background } from 'react-flow-renderer';
+import React, { useState, useEffect } from 'react';
+import ReactFlow, { ReactFlowProvider, MiniMap, Controls, Background } from 'react-flow-renderer';
 
-const MRPDiagram = ({ diagramData }) => {
+const MRPDiagram = ({ diagramData, temporaryComponents = [] }) => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
 
   useEffect(() => {
-    if (diagramData) {
-      const initialNodes = [
-        {
-          id: 'product',
-          data: { label: `${diagramData.productId.name} (${diagramData.demand})` },
-          position: { x: 250, y: 0 },
-          style: { width: 150, height: 50 },
-        },
-      ];
+    const initialNodes = [];
+    const initialEdges = [];
+    let xOffset = 0; // Initial x offset for components
+    let numComponents = 0;
 
-      const initialEdges = [];
-      let yOffset = 100;
+    if (diagramData) {
+      numComponents = diagramData.components.length + temporaryComponents.length;
+      xOffset = -((numComponents - 1) * 150); // Adjust xOffset to center the product
+
+      initialNodes.push({
+        id: 'product',
+        data: { label: diagramData.productId.name },
+        position: { x: xOffset + ((numComponents - 1) * 150) / 2, y: 0 },
+        style: { width: 150, height: 50 },
+        sourcePosition: 'bottom',
+        targetPosition: 'top',
+        draggable: false,
+        selectable: false,
+      });
 
       diagramData.components.forEach((component, index) => {
         initialNodes.push({
           id: `component-${index}`,
           data: { label: `${component.componentId.name} (${component.quantity})` },
-          position: { x: 250, y: yOffset },
+          position: { x: xOffset + (index * 300), y: 200 },
           style: { width: 150, height: 50 },
+          sourcePosition: 'bottom',
+          targetPosition: 'top',
+          draggable: false,
+          selectable: false,
         });
 
         initialEdges.push({
@@ -34,24 +45,44 @@ const MRPDiagram = ({ diagramData }) => {
           target: `component-${index}`,
           type: 'smoothstep',
         });
-
-        yOffset += 100;
       });
 
-      setNodes(initialNodes);
-      setEdges(initialEdges);
+      temporaryComponents.forEach((component, index) => {
+        initialNodes.push({
+          id: `temp-component-${index}`,
+          data: { label: `${component.componentId} (${component.quantity})` },
+          position: { x: xOffset + ((diagramData.components.length + index) * 300), y: 200 },
+          style: { width: 150, height: 50 },
+          sourcePosition: 'bottom',
+          targetPosition: 'top',
+          draggable: false,
+          selectable: false,
+        });
+
+        initialEdges.push({
+          id: `temp-edge-${index}`,
+          source: 'product',
+          target: `temp-component-${index}`,
+          type: 'smoothstep',
+        });
+      });
     }
-  }, [diagramData]);
+
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [diagramData, temporaryComponents]);
 
   return (
     <ReactFlowProvider>
-      <div style={{ height: 500 }}>
+      <div style={{ height: '100vh', width: '100%' }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={setNodes}
-          onEdgesChange={setEdges}
           fitView
+          fitViewOptions={{ padding: 0.2 }}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={false}
         >
           <MiniMap />
           <Controls />
