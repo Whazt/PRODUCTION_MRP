@@ -1,20 +1,44 @@
-// src/components/MRPDiagram.js
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ReactFlow, { ReactFlowProvider, MiniMap, Controls, Background } from 'react-flow-renderer';
 
-const MRPDiagram = ({ diagramData, temporaryComponents = [] }) => {
+const MRPDiagram = ({ diagramData, temporaryComponents = [], demand }) => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
+  const [calculations, setCalculations] = useState([]);
 
   useEffect(() => {
     const initialNodes = [];
     const initialEdges = [];
-    let xOffset = 0; // Initial x offset for components
-    let numComponents = 0;
+    const calculationsTemp = [];
+
+    const processComponent = (component, parentId, xOffset, index, parentDemand) => {
+      const componentId = `component-${index}`;
+      const componentDemand = parentDemand * component.quantity;
+
+      calculationsTemp.push({ name: component?.componentId?.name, demand: componentDemand });
+
+      initialNodes.push({
+        id: componentId,
+        data: { label: `${component?.componentId?.name} (${component.quantity})` },
+        position: { x: xOffset + (index * 300), y: 200 },
+        style: { width: 150, height: 50 },
+        sourcePosition: 'bottom',
+        targetPosition: 'top',
+        draggable: false,
+        selectable: false,
+      });
+
+      initialEdges.push({
+        id: `${parentId}-edge-${index}`,
+        source: parentId,
+        target: componentId,
+        type: 'smoothstep',
+      });
+    };
 
     if (diagramData) {
-      numComponents = diagramData.components.length + temporaryComponents.length;
-      xOffset = -((numComponents - 1) * 150); // Adjust xOffset to center the product
+      const numComponents = diagramData.components.length + temporaryComponents.length;
+      const xOffset = -((numComponents - 1) * 150); // Adjust xOffset to center the product
 
       initialNodes.push({
         id: 'product',
@@ -27,50 +51,25 @@ const MRPDiagram = ({ diagramData, temporaryComponents = [] }) => {
         selectable: false,
       });
 
-      diagramData.components.forEach((component, index) => {
-        initialNodes.push({
-          id: `component-${index}`,
-          data: { label: `${component.componentId.name} (${component.quantity})` },
-          position: { x: xOffset + (index * 300), y: 200 },
-          style: { width: 150, height: 50 },
-          sourcePosition: 'bottom',
-          targetPosition: 'top',
-          draggable: false,
-          selectable: false,
-        });
+      calculationsTemp.push({ name: diagramData.productId.name, demand });
 
-        initialEdges.push({
-          id: `edge-${index}`,
-          source: 'product',
-          target: `component-${index}`,
-          type: 'smoothstep',
-        });
+      diagramData.components.forEach((component, index) => {
+        processComponent(component, 'product', xOffset, index, demand);
       });
 
       temporaryComponents.forEach((component, index) => {
-        initialNodes.push({
-          id: `temp-component-${index}`,
-          data: { label: `${component.componentId} (${component.quantity})` },
-          position: { x: xOffset + ((diagramData.components.length + index) * 300), y: 200 },
-          style: { width: 150, height: 50 },
-          sourcePosition: 'bottom',
-          targetPosition: 'top',
-          draggable: false,
-          selectable: false,
-        });
-
-        initialEdges.push({
-          id: `temp-edge-${index}`,
-          source: 'product',
-          target: `temp-component-${index}`,
-          type: 'smoothstep',
-        });
+        processComponent(component, 'product', xOffset, index, demand);
       });
     }
 
     setNodes(initialNodes);
     setEdges(initialEdges);
-  }, [diagramData, temporaryComponents]);
+    setCalculations(calculationsTemp);
+  }, [diagramData, temporaryComponents, demand]);
+
+  const averageDemand = calculations.length
+    ? calculations.reduce((sum, calc) => sum + calc.demand, 0) / calculations.length
+    : 0;
 
   return (
     <ReactFlowProvider>
@@ -88,6 +87,15 @@ const MRPDiagram = ({ diagramData, temporaryComponents = [] }) => {
           <Controls />
           <Background />
         </ReactFlow>
+        <div>
+          <h2>Demands Calculations</h2>
+          <ul>
+            {calculations.map((calc, index) => (
+              <li key={index}>{calc.name}: {calc.demand}</li>
+            ))}
+          </ul>
+          <h2>Average Demand: {averageDemand}</h2>
+        </div>
       </div>
     </ReactFlowProvider>
   );

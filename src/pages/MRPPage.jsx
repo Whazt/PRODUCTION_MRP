@@ -1,5 +1,4 @@
-// src/pages/MRPPage.js
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import MRPDiagram from '../components/MRPdiagram';
 
 const MRPPage = () => {
@@ -15,6 +14,7 @@ const MRPPage = () => {
   const [newProduct, setNewProduct] = useState('');
   const [newComponent, setNewComponent] = useState('');
   const [diagramData, setDiagramData] = useState(null);
+  const [diagramName, setDiagramName] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -23,25 +23,25 @@ const MRPPage = () => {
   }, []);
 
   const fetchProducts = async () => {
-    const response = await fetch('http://localhost:3001/api/products');
+    const response = await fetch('https://mrpback-production.up.railway.app/api/products');
     const data = await response.json();
     setProducts(data);
   };
 
   const fetchComponents = async () => {
-    const response = await fetch('http://localhost:3001/api/components');
+    const response = await fetch('https://mrpback-production.up.railway.app/api/components');
     const data = await response.json();
     setComponents(data);
   };
 
   const fetchDiagrams = async () => {
-    const response = await fetch('http://localhost:3001/api/diagrams');
+    const response = await fetch('https://mrpback-production.up.railway.app/api/diagrams');
     const data = await response.json();
     setDiagrams(data);
   };
 
   const handleAddProduct = async () => {
-    await fetch('http://localhost:3001/api/products', {
+    await fetch('https://mrpback-production.up.railway.app/api/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newProduct }),
@@ -50,40 +50,99 @@ const MRPPage = () => {
     setNewProduct('');
   };
 
+  const handleAddCompo = async () => {
+    await fetch('https://mrpback-production.up.railway.app/api/components', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newComponent }),
+    });
+    fetchComponents();
+    setNewComponent('');
+  };
+
   const handleAddComponent = () => {
-    const component = {
-      componentId: selectedComponent,
-      quantity: componentQuantity,
-    };
-    setTemporaryComponents([...temporaryComponents, component]);
+    if (!selectedComponent || componentQuantity <= 0) return;
+
+    const existingComponent = temporaryComponents.find(
+      (comp) => comp.componentId === selectedComponent
+    );
+
+    if (existingComponent) {
+      existingComponent.quantity += componentQuantity;
+      setTemporaryComponents([...temporaryComponents]);
+    } else {
+      const component = {
+        componentId: selectedComponent,
+        quantity: componentQuantity,
+      };
+      setTemporaryComponents([...temporaryComponents, component]);
+    }
+
     setSelectedComponent('');
     setComponentQuantity(0);
   };
 
   const handleSaveDiagram = async () => {
-    await fetch('http://localhost:3001/api/diagrams', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        productId: selectedProduct,
-        components: temporaryComponents,
-        demand,
-      }),
-    });
-    fetchDiagrams(); // Para actualizar la lista de diagramas guardados
-    setTemporaryComponents([]);
-    setDemand(0);
+    const componentsData = temporaryComponents.map((component) => ({
+      componentId: component.componentId,
+      quantity: component.quantity,
+    }));
+
+    const payload = {
+      name: diagramName,
+      productId: selectedProduct,
+      components: componentsData,
+      demand,
+    };
+
+    console.log('Payload:', JSON.stringify(payload));
+
+    try {
+      const response = await fetch('https://mrpback-production.up.railway.app/api/diagrams', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      fetchDiagrams(); // Refresh the list of saved diagrams
+      setTemporaryComponents([]);
+      setDemand(0);
+      setDiagramName('');
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleSelectDiagram = async (diagramId) => {
-    const response = await fetch(`http://localhost:3001/api/diagrams/${diagramId}`);
+    const response = await fetch(`https://mrpback-production.up.railway.app/api/diagrams/${diagramId}`);
     const data = await response.json();
     setDiagramData(data);
+    setDemand(data.demand); // Set demand to the selected diagram's demand
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-xl font-bold mb-4">MRP Diagrams</h1>
+
+      <div className="mb-4">
+        <label className="block mb-2">Diagram Name</label>
+        <input
+          type="text"
+          value={diagramName}
+          onChange={(e) => setDiagramName(e.target.value)}
+          className="p-2 border rounded"
+          placeholder="Enter diagram name"
+        />
+      </div>
 
       <div className="mb-4">
         <label className="block mb-2">Select Product</label>
@@ -118,7 +177,7 @@ const MRPPage = () => {
         <input
           type="number"
           value={componentQuantity}
-          onChange={(e) => setComponentQuantity(e.target.value)}
+          onChange={(e) => setComponentQuantity(parseInt(e.target.value, 10))}
           className="p-2 border rounded ml-2"
           placeholder="Quantity"
         />
@@ -148,7 +207,7 @@ const MRPPage = () => {
         <input
           type="number"
           value={demand}
-          onChange={(e) => setDemand(e.target.value)}
+          onChange={(e) => setDemand(parseInt(e.target.value, 10))}
           className="p-2 border rounded"
         />
       </div>
@@ -182,7 +241,7 @@ const MRPPage = () => {
           className="p-2 border rounded"
           placeholder="New component name"
         />
-        <button onClick={handleAddComponent} className="p-2 bg-blue-500 text-white rounded ml-2">
+        <button onClick={handleAddCompo} className="p-2 bg-blue-500 text-white rounded ml-2">
           Add Component
         </button>
       </div>
@@ -199,7 +258,7 @@ const MRPPage = () => {
           <option value="">Select a diagram</option>
           {diagrams.map((diagram) => (
             <option key={diagram._id} value={diagram._id}>
-              {diagram.productId.name}
+              {diagram.name} - {diagram.productId.name}
             </option>
           ))}
         </select>
@@ -208,9 +267,11 @@ const MRPPage = () => {
       {diagramData && (
         <MRPDiagram
           diagramData={diagramData}
+          temporaryComponents={temporaryComponents}
+          demand={demand} // Pass the demand to the diagram component
         />
       )}
-    </div>
+     </div>
   );
 };
 
