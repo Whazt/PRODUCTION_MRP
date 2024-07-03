@@ -129,7 +129,7 @@ function CantKanbanes() {
                                     <th className="border border-gray-300 p-2">Producto</th>
                                     <th className="border border-gray-300 p-2">Demanda</th>
                                     <th className="border border-gray-300 p-2">Tiempo de Entrega</th>
-                                    <th className="border border-gray-300 p-2">Stock de Seguridad</th>
+                                    <th className="border border-gray-300 p-2">Stock de Seguridad %</th>
                                     <th className="border border-gray-300 p-2">Capacidad de Almacenaje</th>
                                     <th className="border border-gray-300 p-2">Cantidad de Kanbanes</th>
                                 </tr>
