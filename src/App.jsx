@@ -10,7 +10,7 @@ import CantRecipientes from "./pages/CantRecipientes"
 import CantKanbanes from "./pages/CantKanbanes"
 import Mantenimiento from "./pages/Mantenimiento"
 import Mrp from "./pages/MRP"
-import Arboral from "./pages/Arboral"
+import MRPPage from "./pages/MRPPage"
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 
@@ -35,7 +35,7 @@ function App() {
               <Route path='/Inventarios/Cantidad-Recipientes' exact={true} element={<CantRecipientes/>}/>
               <Route path='/Inventarios/Cantidad-Kanbanes' exact={true} element={<CantKanbanes/>}/>
               <Route path='/MRP' exact={true} element={<Mrp/>}/>
-              <Route path='/MRP/Arboral' exact={true} element={<Arboral/>}/>
+              <Route path='/MRP/Arboral' exact={true} element={<MRPPage/>}/>
             </Routes>
           </div>
         
